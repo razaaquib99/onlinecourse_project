@@ -119,7 +119,7 @@
 
         <!-- Score Display -->
         <div class="score-display">
-            {{ score }}%
+            {{ grade }}%
         </div>
 
         <!-- Score Percentage Text -->
@@ -130,11 +130,11 @@
         <!-- Feedback Message -->
         {% if passed %}
             <div class="passed-message">
-                <strong>Great Job!</strong> You have successfully passed the exam. Your score of {{ score }}% demonstrates a solid understanding of the course material. Keep up the excellent work!
+                <strong>Great Job!</strong> You have successfully passed the exam. Your score of {{ grade }}% demonstrates a solid understanding of the course material. Keep up the excellent work!
             </div>
         {% else %}
             <div class="failed-message">
-                <strong>Keep Learning!</strong> You scored {{ score }}%. To pass this exam, you need to score above 50%. We encourage you to review the course material and try again.
+                <strong>Keep Learning!</strong> You scored {{ grade }}%. To pass this exam, you need to score above 50%. We encourage you to review the course material and try again.
             </div>
         {% endif %}
 
@@ -145,6 +145,13 @@
             {% else %}
                 <p>Review the lessons and try the exam again to improve your score.</p>
             {% endif %}
+        </div>
+
+        <!-- Score Breakdown -->
+        <div style="background-color: #e7f3ff; border-left: 4px solid #667eea; padding: 15px; margin: 20px 0; border-radius: 4px;">
+            <p style="margin: 0; color: #333; font-weight: bold;">
+                Correct Answers: {{ score }} out of {{ total }}
+            </p>
         </div>
 
         <!-- Detailed Results: Questions and Answers -->
