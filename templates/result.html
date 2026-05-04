@@ -147,6 +147,29 @@
             {% endif %}
         </div>
 
+        <!-- Detailed Results: Questions and Answers -->
+        <div style="margin-top: 40px; text-align: left;">
+            <h3 style="text-align: center; margin-bottom: 30px; color: #333;">Exam Details</h3>
+            {% for question in questions %}
+                <div style="background-color: #f8f9fa; padding: 20px; margin-bottom: 15px; border-radius: 8px;">
+                    <p style="font-weight: bold; color: #333; margin-bottom: 10px;">
+                        Q{{ forloop.counter }}: {{ question.question_text }}
+                    </p>
+                    
+                    {% for choice in question.choices.all %}
+                        <div style="padding: 8px; margin: 5px 0; border-left: 4px solid #667eea;">
+                            {% if choice.is_correct %}
+                                <span style="color: #28a745; font-weight: bold;">✅ {{ choice.choice_text }}</span>
+                                <span style="color: #28a745; font-size: 0.85rem;">(Correct Answer)</span>
+                            {% else %}
+                                <span style="color: #666;">{{ choice.choice_text }}</span>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+
         <!-- Back Button -->
         <div class="button-container">
             <a href="{% url 'submit' course.id %}" class="btn-back">

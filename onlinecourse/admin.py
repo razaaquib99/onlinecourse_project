@@ -1,10 +1,6 @@
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin, TabularInline
-from .models import Course
-from .models import Lesson
-from .models import Question
-from .models import Choice
-from .models import Submission
+from .models import Course, Lesson, Instructor, Learner, Question, Choice, Enrollment, Submission
 
 
 class ChoiceInline(TabularInline):
@@ -53,15 +49,17 @@ class SubmissionAdmin(ModelAdmin):
     """
     Admin interface for Submission model to view submission records.
     """
-    list_display = ('user_name', 'course', 'score', 'created_at')
-    search_fields = ('user_name', 'course__name')
-    list_filter = ('course', 'created_at')
-    readonly_fields = ('created_at',)
+    list_display = ('enrollment', 'id')
+    search_fields = ('enrollment__user', 'enrollment__course__name')
+    list_filter = ('enrollment__course',)
 
 
 # Register all models with their respective admin classes
+admin.site.register(Instructor)
+admin.site.register(Learner)
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Lesson, LessonAdmin)
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(Choice)
+admin.site.register(Enrollment)
 admin.site.register(Submission, SubmissionAdmin)

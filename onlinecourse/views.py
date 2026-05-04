@@ -87,38 +87,57 @@ def submit(request, course_id):
 
 def show_exam_result(request, course_id):
     """
-    Display the exam result and score to the user.
+    Display the exam result and score to the user with detailed breakdown.
     
     Args:
         request: HTTP request object
         course_id: ID of the course for which result is being shown
         
     Returns:
-        Rendered result.html template with score and congratulations message if applicable
+        Rendered result.html template with score, grade, questions, and selected choices
     """
     # Get the course or return 404 if not found
     course = get_object_or_404(Course, id=course_id)
-
-    # Prefer the saved Submission record so the result comes from the model, not only session state.
-    submission_id = request.session.get('last_submission_id')
-    submission = None
-    if submission_id:
-        submission = Submission.objects.filter(id=submission_id, course=course).first()
-
-    if submission is None:
-        submission = Submission.objects.filter(course=course).order_by('-created_at').first()
-
-    score = submission.score if submission else request.session.get('last_score', 0)
+    
+    # Get selected choice IDs from request
+    selected_ids = []
+    for key in request.POST:
+        if key.startswith('choice_'):
+            selected_ids.append(request.POST.get(key))
+    
+    # Get selected choices
+    selected_choices = Choice.objects.filter(id__in=selected_ids)
+    
+    # Get all questions for this course
+    questions = Question.objects.filter(lesson__course=course)
+    
+    total_score = 0
+    possible_score = questions.count()
+    
+    # Calculate score by checking if selected choices match correct answers
+    for question in questions:
+        correct_choices = question.choices.filter(is_correct=True)
+        question_selected_choices = selected_choices.filter(question=question)
+        
+        # Check if selected choices match correct choices for this question
+        if set(correct_choices.values_list('id', flat=True)) == set(question_selected_choices.values_list('id', flat=True)):
+            total_score += 1
+    
+    # Calculate grade percentage
+    grade = (total_score / possible_score * 100) if possible_score > 0 else 0
     
     # Determine if user passed (score > 50%)
-    passed = score > 50
+    passed = grade > 50
     
-    # Create context for template
+    # Create context for template with all required variables
     context = {
         'course': course,
-        'score': score,
+        'score': total_score,
+        'total': possible_score,
+        'grade': int(grade),
         'passed': passed,
-        'submission': submission,
+        'selected_ids': selected_ids,
+        'questions': questions,
     }
     
     return render(request, 'result.html', context)

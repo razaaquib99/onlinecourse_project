@@ -1,6 +1,34 @@
 from django.db import models
 
 
+class Instructor(models.Model):
+    """
+    Instructor model to represent course instructors.
+    """
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Instructor"
+        verbose_name_plural = "Instructors"
+
+
+class Learner(models.Model):
+    """
+    Learner model to represent learners/students.
+    """
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Learner"
+        verbose_name_plural = "Learners"
+
+
 class Course(models.Model):
     """
     Course model to represent an online course with a name.
@@ -64,18 +92,31 @@ class Choice(models.Model):
         verbose_name_plural = "Choices"
 
 
+class Enrollment(models.Model):
+    """
+    Enrollment model to track user enrollment in courses.
+    """
+    user = models.CharField(max_length=100)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='enrollments')
+
+    def __str__(self):
+        return f"{self.user} - {self.course.name}"
+
+    class Meta:
+        verbose_name = "Enrollment"
+        verbose_name_plural = "Enrollments"
+
+
 class Submission(models.Model):
     """
     Submission model to store exam submission results.
     Tracks user submissions and their scores.
     """
-    user_name = models.CharField(max_length=255)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='submissions')
-    score = models.IntegerField()
-    created_at = models.DateTimeField(auto_now_add=True)
+    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE, related_name='submissions')
+    choices = models.ManyToManyField(Choice)
 
     def __str__(self):
-        return f"{self.user_name} - {self.course.name} - Score: {self.score}"
+        return f"{self.enrollment.user} - {self.enrollment.course.name}"
 
     class Meta:
         verbose_name = "Submission"
