@@ -98,9 +98,17 @@ def show_exam_result(request, course_id):
     """
     # Get the course or return 404 if not found
     course = get_object_or_404(Course, id=course_id)
-    
-    # Get the score from session (set in submit view)
-    score = request.session.get('last_score', 0)
+
+    # Prefer the saved Submission record so the result comes from the model, not only session state.
+    submission_id = request.session.get('last_submission_id')
+    submission = None
+    if submission_id:
+        submission = Submission.objects.filter(id=submission_id, course=course).first()
+
+    if submission is None:
+        submission = Submission.objects.filter(course=course).order_by('-created_at').first()
+
+    score = submission.score if submission else request.session.get('last_score', 0)
     
     # Determine if user passed (score > 50%)
     passed = score > 50
@@ -110,6 +118,7 @@ def show_exam_result(request, course_id):
         'course': course,
         'score': score,
         'passed': passed,
+        'submission': submission,
     }
     
     return render(request, 'result.html', context)

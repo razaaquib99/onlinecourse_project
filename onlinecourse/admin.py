@@ -1,8 +1,13 @@
 from django.contrib import admin
-from .models import Course, Lesson, Question, Choice, Submission
+from django.contrib.admin import ModelAdmin, TabularInline
+from .models import Course
+from .models import Lesson
+from .models import Question
+from .models import Choice
+from .models import Submission
 
 
-class ChoiceInline(admin.TabularInline):
+class ChoiceInline(TabularInline):
     """
     Inline admin for Choice model to manage choices within questions.
     """
@@ -10,7 +15,7 @@ class ChoiceInline(admin.TabularInline):
     extra = 1
 
 
-class QuestionInline(admin.TabularInline):
+class QuestionInline(TabularInline):
     """
     Inline admin for Question model to manage questions within lessons.
     """
@@ -18,7 +23,7 @@ class QuestionInline(admin.TabularInline):
     extra = 1
 
 
-class QuestionAdmin(admin.ModelAdmin):
+class QuestionAdmin(ModelAdmin):
     """
     Admin interface for Question model with inline choices.
     """
@@ -27,7 +32,7 @@ class QuestionAdmin(admin.ModelAdmin):
     search_fields = ('question_text',)
 
 
-class LessonAdmin(admin.ModelAdmin):
+class LessonAdmin(ModelAdmin):
     """
     Admin interface for Lesson model with inline questions.
     """
@@ -36,7 +41,7 @@ class LessonAdmin(admin.ModelAdmin):
     search_fields = ('title',)
 
 
-class CourseAdmin(admin.ModelAdmin):
+class CourseAdmin(ModelAdmin):
     """
     Admin interface for Course model.
     """
@@ -44,7 +49,7 @@ class CourseAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 
-class SubmissionAdmin(admin.ModelAdmin):
+class SubmissionAdmin(ModelAdmin):
     """
     Admin interface for Submission model to view submission records.
     """
